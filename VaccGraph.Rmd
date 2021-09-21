@@ -20,8 +20,8 @@ Sys.setlocale("LC_TIME", "C")
 Importing data
 ```{r}
 vacc<-read.csv("vaccinations.csv")
-vacc
-head(vacc)
+##vacc
+##head(vacc)
 ##dates<-vacc$date
 ```
 
@@ -32,19 +32,19 @@ lowmid = filter(vacc,str_detect(iso_code,"OWID_LMC"))
 upmid = filter(vacc, str_detect(iso_code,"OWID_UMC"))
 high = filter(vacc, str_detect(iso_code, "OWID_HIC"))
 inc_classes=rbind(low,lowmid,upmid, high)
-inc_classes
+##inc_classes
 ```
 
 Changing "date" from <chr> to <date> and appending it to the dataframe
 So that graph later recognises "date" as continous and not discrete
 ```{r}
 str(inc_classes$date)
-inc_classes$date
+##inc_classes$date
 dates_form=ymd(inc_classes$date)
 str(dates_form)
 inc_classes <- inc_classes %>%
   add_column(DateForm =dates_form)
-inc_classes
+##inc_classes
 ```
 Reordering legend labels by introducing new factored column in dataframe
 ```{r}
