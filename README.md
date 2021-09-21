@@ -1,36 +1,73 @@
+---
+title: "R Notebook"
+output:
+  html_document:
+    df_print: paged
+---
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-# 21\_09\_20\_CoVaccHomework
-
-<!-- badges: start -->
-<!-- badges: end -->
-
-The goal of 21\_09\_20\_CoVaccHomework is to …
-
-What is special about using `README.Rmd` instead of just `README.md`?
-You can include R chunks like so:
-
-``` r
-summary(cars)
-#>      speed           dist       
-#>  Min.   : 4.0   Min.   :  2.00  
-#>  1st Qu.:12.0   1st Qu.: 26.00  
-#>  Median :15.0   Median : 36.00  
-#>  Mean   :15.4   Mean   : 42.98  
-#>  3rd Qu.:19.0   3rd Qu.: 56.00  
-#>  Max.   :25.0   Max.   :120.00
+Load Libraries
+```{r}
+library(plyr)
+library(tidyverse)
+library(lubridate)
+library(here)
+library(usethis)
 ```
 
-You’ll still need to render `README.Rmd` regularly, to keep `README.md`
-up-to-date. `devtools::build_readme()` is handy for this. You could also
-use GitHub Actions to re-render `README.Rmd` every time you push. An
-example workflow can be found here:
-<https://github.com/r-lib/actions/tree/master/examples>.
+Setting date format to English so that no one is bothered by German month names
+```{r}
+Sys.setlocale("LC_TIME", "C")
+```
 
-You can also embed plots, for example:
+Importing data
+```{r}
+vacc<-read.csv("vaccinations.csv")
+vacc
+head(vacc)
+##dates<-vacc$date
+```
 
-![](README_files/figure-gfm/pressure-1.png)<!-- -->
+Extracting four different income classes from data and combining them
+```{r}
+low = filter(vacc,str_detect(iso_code,"OWID_LIC"))
+lowmid = filter(vacc,str_detect(iso_code,"OWID_LMC"))
+upmid = filter(vacc, str_detect(iso_code,"OWID_UMC"))
+high = filter(vacc, str_detect(iso_code, "OWID_HIC"))
+inc_classes=rbind(low,lowmid,upmid, high)
+inc_classes
+```
 
-In that case, don’t forget to commit and push the resulting figure
-files, so they display on GitHub.
+Changing "date" from <chr> to <date> and appending it to the dataframe
+So that graph later recognises "date" as continous and not discrete
+```{r}
+str(inc_classes$date)
+inc_classes$date
+dates_form=ymd(inc_classes$date)
+str(dates_form)
+inc_classes <- inc_classes %>%
+  add_column(DateForm =dates_form)
+inc_classes
+```
+Reordering legend labels by introducing new factored column in dataframe
+```{r}
+inc_classes$inc_fac <- factor(inc_classes$location, levels=c("High income", "Upper middle income", "Lower middle income", "Low income"), 
+                    labels=c("High income", "Upper middle income", "Lower middle income", "Low income"))
+```
+
+Plotting graph
+```{r}
+ggplot(data=inc_classes)+
+  geom_line(mapping=aes(x=dates_form,y=people_vaccinated_per_hundred,group=inc_fac,color=inc_fac),size=1.5)+
+  
+  ## TITLE and LEGEND manipulation
+  labs(title="Vaccination progress in different income classes")+
+  scale_colour_discrete("Income Classes",)+
+
+  ## X-AXIS manipulation
+  theme(axis.text.x = element_text(color="black", size=10, angle=45),axis.text.y = element_text(color="black",size=9, angle=0))+
+  scale_x_date(date_breaks = "months" , date_labels = "%b-%y")+
+  xlab("Date")+
+
+  ## Y-AXIS manipulation
+  scale_y_continuous(name="vaccinated persons / 100 persons \n (% vaccinated)",breaks = scales::pretty_breaks(n = 10))
+```
