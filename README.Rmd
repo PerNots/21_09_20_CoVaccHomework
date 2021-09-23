@@ -1,9 +1,11 @@
 ---
-title: "R Notebook"
-
+title: "Untitled"
+output: github_document
 ---
 
-
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
 
 Load Libraries
 ```{r}
@@ -56,7 +58,7 @@ inc_classes$inc_fac <- factor(inc_classes$location, levels=c("High income", "Upp
 
 Plotting graph
 ```{r}
-ggplot(data=inc_classes)+
+g=ggplot(data=inc_classes)+
   geom_line(mapping=aes(x=dates_form,y=people_vaccinated_per_hundred,group=inc_fac,color=inc_fac),size=1.5)+
   
   ## TITLE and LEGEND manipulation
@@ -70,5 +72,5 @@ ggplot(data=inc_classes)+
 
   ## Y-AXIS manipulation
   scale_y_continuous(name="vaccinated persons / 100 persons \n (% vaccinated)",breaks = scales::pretty_breaks(n = 10))
+print(g)
 ```
-
