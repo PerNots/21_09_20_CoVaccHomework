@@ -69,3 +69,5 @@ ggplot(data=inc_classes)+
   ## Y-AXIS manipulation
   scale_y_continuous(name="vaccinated persons / 100 persons \n (% vaccinated)",breaks = scales::pretty_breaks(n = 10))
 ```
+Force update
+
