@@ -2,8 +2,7 @@
 title: "R Notebook"
 
 ---
-{r eval=FALSE, include=FALSE}
-rmarkdown::render("ORIGIN.Rmd", output_file = "README.md")
+
 
 
 Load Libraries
